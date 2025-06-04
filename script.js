@@ -1,4 +1,4 @@
-// script.js (แทนที่ทั้งไฟล์)
+// script.js
 
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyGz5ruLtT5CJehNCEbimRv9kpfCOomnNDKNOl-YuY0AhG3QB0CLCNlnXEQQj3pUuy0mA/exec'; // !!! IMPORTANT: Replace with your deployed Google Apps Script Web App URL !!!
 
@@ -68,7 +68,6 @@ async function openSidebar(locationId) {
                             <div class="product-info">
                                 <strong>${item.productName}</strong><br>
                                 จำนวน: ${item.count} ชิ้น<br>
-                                QR Code (ตัวอย่าง): ${item.exampleQrCode}
                             </div>
                          </li>`;
             });
@@ -152,6 +151,12 @@ async function handleAddItem() {
         return;
     }
 
+    // Clear message from secondary sidebar if it's open, as add message is in main sidebar
+    const secondaryActionMessage = document.querySelector('#product-qrcodes-sidebar .action-section p');
+    if (secondaryActionMessage) {
+        secondaryActionMessage.innerText = '';
+    }
+
     actionMessage.innerText = 'กำลังเพิ่มสินค้า...';
 
     try {
@@ -181,7 +186,8 @@ async function handleAddItem() {
 // --- handleRemoveSelectedItems (targets secondary sidebar checkboxes) ---
 async function handleRemoveSelectedItems() {
     const locationId = currentActiveLocationId; // Use the globally tracked active location
-    const actionMessage = document.getElementById('action-message');
+    // The action message for deletion will now be displayed in the main sidebar, as it's the primary status area.
+    const actionMessage = document.getElementById('action-message'); 
     
     // Select checkboxes ONLY from the secondary sidebar
     const selectedCheckboxes = document.querySelectorAll('#product-qrcodes-sidebar .qrcode-checkbox:checked');

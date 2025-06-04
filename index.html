@@ -14,20 +14,32 @@
             </div>
     </div>
 
-<div id="item-details-sidebar" class="sidebar">
+    <div id="item-details-sidebar" class="sidebar">
         <button class="close-btn" onclick="closeSidebar()">X</button>
         <h2>สินค้าในตำแหน่ง: <span id="current-location-id"></span></h2>
         <div id="details-content">
             <p>คลิกที่ช่องเก็บสินค้าบนแผนผังเพื่อดูรายละเอียด</p>
         </div>
 
-        <hr> <h3>เพิ่ม / ลบ สินค้า</h3>
+        <hr>
+
+        <h3>เพิ่มสินค้า</h3> 
         <div class="action-section">
             <input type="text" id="qrCodeInput" placeholder="สแกน/กรอก QR Code ที่นี่" autofocus>
             <button onclick="handleAddItem()">เพิ่มสินค้า</button>
-            <button onclick="handleRemoveItem()">ลบสินค้า</button>
-            <p id="action-message" style="color: red;"></p>
+            <p id="action-message" style="color: red;"></p> </div>
+    </div>
+
+    <div id="product-qrcodes-sidebar" class="sidebar secondary-sidebar">
+        <button class="close-btn" onclick="closeProductQRCodesSidebar()">X</button>
+        <h2>QR Codes ของ: <span id="current-product-name"></span></h2>
+        <div id="product-qrcodes-content">
+            <p>กำลังโหลด...</p>
         </div>
+        <hr>
+        <div class="action-section">
+            <button id="removeSelectedBtn" onclick="handleRemoveSelectedItems()">ลบสินค้าที่เลือก</button>
+            <p id="action-message-secondary" style="color: red;"></p> </div>
     </div>
 
     <script src="script.js"></script>
