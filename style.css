@@ -1,0 +1,168 @@
+/* style.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7f6;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    overflow-x: hidden; /* Prevent horizontal scroll when sidebar is open */
+}
+
+.container {
+    padding: 20px;
+    max-width: 1200px; /* Adjust based on your preference */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+#warehouse-map {
+    display: grid;
+    /* 10 columns for A-1 to A-10 */
+    grid-template-columns: repeat(10, minmax(80px, 1fr)); /* Responsive column width */
+    /* 8 rows for A-H */
+    grid-template-rows: repeat(8, minmax(80px, 1fr)); /* Responsive row height */
+    gap: 8px;
+    border: 1px solid #cce7e4;
+    padding: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+.location-slot {
+    background-color: #e0f2f7; /* Light blue */
+    border: 1px solid #b3e0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #0056b3;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding/border in element's total width/height */
+}
+
+.location-slot:hover {
+    background-color: #c0e6f2; /* Slightly darker blue on hover */
+    transform: scale(1.02); /* Slight zoom effect */
+}
+
+/* Sidebar styles */
+.sidebar {
+    height: 100%;
+    width: 0; /* Initially hidden */
+    position: fixed;
+    z-index: 10; /* Above other content */
+    top: 0;
+    right: 0;
+    background-color: #ffffff;
+    overflow-x: hidden;
+    transition: 0.5s; /* Smooth transition for opening/closing */
+    padding-top: 60px;
+    box-shadow: -4px 0 8px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    color: #333;
+}
+
+.sidebar.open {
+    width: 350px; /* Width when open, adjust as needed */
+    padding: 20px;
+}
+
+.sidebar h2 {
+    color: #0056b3;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar .close-btn {
+    position: absolute;
+    top: 10px;
+    left: 25px;
+    font-size: 30px;
+    margin-left: 50px;
+    background: none;
+    border: none;
+    color: #aaa;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.sidebar .close-btn:hover {
+    color: #333;
+}
+
+#details-content ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#details-content li {
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #eee;
+}
+
+#details-content li strong {
+    color: #007bff;
+}
+
+#details-content p {
+    text-align: center;
+    color: #666;
+}
+/* เพิ่มใน style.css */
+.action-section {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+.action-section input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.action-section button {
+    padding: 10px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+.action-section button:first-of-type { /* Add button */
+    background-color: #28a745; /* Green */
+    color: white;
+}
+.action-section button:first-of-type:hover {
+    background-color: #218838;
+}
+.action-section button:last-of-type { /* Remove button */
+    background-color: #dc3545; /* Red */
+    color: white;
+}
+.action-section button:last-of-type:hover {
+    background-color: #c82333;
+}
+#action-message {
+    margin-top: 10px;
+    font-size: 0.9em;
+}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Warehouse Stock System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Visual Warehouse Stock Map</h1>
+
+        <div id="warehouse-map">
+            </div>
+    </div>
+
+<div id="item-details-sidebar" class="sidebar">
+        <button class="close-btn" onclick="closeSidebar()">X</button>
+        <h2>สินค้าในตำแหน่ง: <span id="current-location-id"></span></h2>
+        <div id="details-content">
+            <p>คลิกที่ช่องเก็บสินค้าบนแผนผังเพื่อดูรายละเอียด</p>
+        </div>
+
+        <hr> <h3>เพิ่ม / ลบ สินค้า</h3>
+        <div class="action-section">
+            <input type="text" id="qrCodeInput" placeholder="สแกน/กรอก QR Code ที่นี่" autofocus>
+            <button onclick="handleAddItem()">เพิ่มสินค้า</button>
+            <button onclick="handleRemoveItem()">ลบสินค้า</button>
+            <p id="action-message" style="color: red;"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
