@@ -1,3 +1,219 @@
+/* General Body and Container Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #eef2f5; /* Light gray background */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to top */
+    min-height: 100vh;
+    overflow-x: hidden; /* Prevent horizontal scroll when sidebar opens */
+}
+
+/* Adjust body margin when sidebar is open */
+body.sidebar-open {
+    margin-right: 350px; /* Adjust based on sidebar width */
+    transition: margin-right 0.3s ease;
+}
+
+body.secondary-sidebar-open {
+    margin-right: 700px; /* Adjust based on sidebar width (350 + 350) */
+    transition: margin-right 0.3s ease;
+}
+
+.container {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-top: 30px;
+    width: 95%;
+    max-width: 1000px;
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 2em;
+}
+
+/* Warehouse Map Styles */
+#warehouse-map {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); /* 10 columns */
+    grid-template-rows: repeat(8, 1fr); /* 8 rows for A-H */
+    gap: 8px; /* Increased gap for better spacing */
+    border: 1px solid #ddd;
+    padding: 15px;
+    background-color: #f8f8f8;
+    min-height: 500px; /* Minimum height for the map */
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+.location-slot {
+    background-color: #e0f2f7; /* Light blue */
+    border: 1px solid #b3e0ed;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: #007bff; /* Blue text */
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    font-size: 1.1em;
+}
+
+.location-slot:hover {
+    background-color: #cce9f5;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Sidebar Styles (Main and Secondary) */
+.sidebar {
+    height: 100%;
+    width: 0; /* Initially hidden */
+    position: fixed;
+    z-index: 1000; /* Main sidebar on top of content, below modal */
+    top: 0;
+    right: 0;
+    background-color: #f8f9fa; /* Light background for sidebar */
+    overflow-x: hidden;
+    transition: 0.3s;
+    padding-top: 60px;
+    box-shadow: -4px 0 10px rgba(0,0,0,0.1);
+    box-sizing: border-box; /* Include padding in width */
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+}
+
+.sidebar.open {
+    width: 350px; /* Standard sidebar width */
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+/* Secondary Sidebar Specific Styles */
+.secondary-sidebar {
+    z-index: 1002; /* Secondary sidebar on top of main sidebar */
+    /* Adjust position if needed, it will slide in after main sidebar */
+    /* This will be managed by JS to position it correctly on top of main sidebar or to the right */
+}
+
+.sidebar h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 30px;
+    color: #888;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: color 0.2s ease;
+}
+
+.close-btn:hover {
+    color: #555;
+}
+
+#details-content, #product-qrcodes-content {
+    flex-grow: 1; /* Allows content to take available space */
+    padding: 10px 0;
+    overflow-y: auto; /* Scroll if content overflows */
+    margin-bottom: 20px;
+}
+
+#details-content ul, #product-qrcodes-content ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#details-content li, #product-qrcodes-content li {
+    background-color: #f0f0f0;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#details-content li:hover {
+    background-color: #e0e0e0;
+}
+
+#product-qrcodes-content li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95em;
+}
+
+#product-qrcodes-content li:hover {
+    background-color: #e0e0e0;
+}
+
+.product-info strong {
+    color: #0056b3;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 25px 0;
+}
+
+.action-section {
+    padding: 10px 0;
+    text-align: center; /* Center buttons and inputs */
+}
+
+.action-section input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.action-section button {
+    background-color: #28a745; /* Green */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.2s ease;
+    margin-top: 10px;
+}
+
+.action-section button:hover {
+    background-color: #218838;
+}
+
+#action-message, #action-message-secondary, #relocate-message {
+    margin-top: 10px;
+    font-size: 0.9em;
+    font-weight: bold;
+    text-align: center;
+}
+
 /* Styles for Modal */
 .modal {
     display: none; /* Hidden by default */
@@ -8,79 +224,102 @@
     width: 100%; /* Full width */
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    background-color: rgba(0,0,0,0.6); /* Darker overlay */
+    display: flex; /* Use flexbox for centering */
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
 }
 
 .modal.open {
-    display: flex; /* Use flexbox for centering */
+    display: flex; /* Use flexbox for centering when open */
 }
 
 .modal-content {
     background-color: #fefefe;
-    margin: auto; /* Centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be more specific, e.g., 500px */
+    padding: 30px;
+    border: 1px solid #a0a0a0;
+    border-radius: 10px;
+    width: 90%;
     max-width: 500px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.25), 0 12px 40px 0 rgba(0,0,0,0.2);
     position: relative;
-    box-sizing: border-box; /* Include padding in width */
+    box-sizing: border-box;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.8em;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .close-button {
     color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
     position: absolute;
-    right: 10px;
-    top: 5px;
+    right: 15px;
+    top: 10px;
+    font-size: 32px;
+    font-weight: bold;
     cursor: pointer;
+    transition: color 0.2s ease;
 }
 
 .close-button:hover,
 .close-button:focus {
-    color: black;
+    color: #555;
     text-decoration: none;
-    cursor: pointer;
 }
 
 .modal-body label {
     display: block;
-    margin-top: 10px;
+    margin-top: 15px;
+    margin-bottom: 5px;
     font-weight: bold;
+    color: #555;
+    font-size: 1em;
 }
 
 .modal-body input[type="text"] {
-    width: calc(100% - 22px); /* Account for padding and border */
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    width: calc(100% - 24px); /* Account for padding and border */
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
     box-sizing: border-box;
+    font-size: 1em;
 }
 
 .modal-body button {
-    background-color: #4CAF50; /* Green */
+    background-color: #007bff; /* Blue for primary actions */
     color: white;
-    padding: 10px 15px;
+    padding: 12px 25px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
-    margin-top: 10px;
+    font-size: 1.1em;
+    margin-top: 15px;
+    transition: background-color 0.2s ease;
 }
 
 .modal-body button:hover {
-    opacity: 0.8;
+    background-color: #0056b3;
 }
 
 #relocate-details {
-    margin-top: 20px;
-    padding-top: 15px;
+    margin-top: 25px;
+    padding-top: 20px;
     border-top: 1px solid #eee;
+    text-align: left; /* Align text within details section */
+}
+
+#relocate-details p {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    color: #333;
+}
+
+#relocate-details span {
+    font-weight: bold;
+    color: #007bff; /* Highlight current location */
 }
