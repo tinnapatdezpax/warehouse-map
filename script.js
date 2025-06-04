@@ -1,20 +1,14 @@
-// script.js
+// script.js (แทนที่ทั้งไฟล์)
 
-// !!! IMPORTANT: Replace with your deployed Google Apps Script Web App URL !!!
-// To get this URL:
-// 1. Go to your Google Sheet > Extensions > Apps Script
-// 2. Paste the Apps Script code below into Code.gs
-// 3. Click "Deploy" > "New deployment"
-// 4. Select "Web app" as type
-// 5. For "Execute as:", choose "Me"
-// 6. For "Who has access:", choose "Anyone"
-// 7. Click "Deploy" and copy the Web app URL.
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyGz5ruLtT5CJehNCEbimRv9kpfCOomnNDKNOl-YuY0AhG3QB0CLCNlnXEQQj3pUuy0mA/exec'; 
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyGz5ruLtT5CJehNCEbimRv9kpfCOomnNDKNOl-YuY0AhG3QB0CLCNlnXEQQj3pUuy0mA/exec'; // !!! IMPORTANT: Replace with your deployed Google Apps Script Web App URL !!!
+
+// Global variable to store currently active location ID
+let currentActiveLocationId = '';
 
 document.addEventListener('DOMContentLoaded', () => {
     const warehouseMap = document.getElementById('warehouse-map');
     const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-    const cols = Array.from({ length: 10 }, (_, i) => i + 1); // 1 to 10
+    const cols = Array.from({ length: 10 }, (_, i) => i + 1);
 
     // Dynamically create location slots
     rows.forEach(rowChar => {
@@ -28,13 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
             warehouseMap.appendChild(slot);
         });
     });
-     const qrCodeInput = document.getElementById('qrCodeInput');
+
+    // Add Enter key functionality to QR code input
+    const qrCodeInput = document.getElementById('qrCodeInput');
     if (qrCodeInput) {
         qrCodeInput.addEventListener('keydown', (event) => {
-            // ตรวจสอบว่าปุ่มที่กดคือ Enter (keyCode 13 หรือ event.key === 'Enter')
             if (event.key === 'Enter' || event.keyCode === 13) {
-                event.preventDefault(); // ป้องกันการเกิด default action เช่น การส่งฟอร์ม (ถ้ามี)
-                handleAddItem(); // เรียกฟังก์ชันเพิ่มสินค้า
+                event.preventDefault();
+                handleAddItem();
             }
         });
     }
@@ -44,53 +39,48 @@ async function openSidebar(locationId) {
     const sidebar = document.getElementById('item-details-sidebar');
     const currentLocationIdSpan = document.getElementById('current-location-id');
     const detailsContent = document.getElementById('details-content');
+    const actionMessage = document.getElementById('action-message');
 
+    currentActiveLocationId = locationId; // Set active location ID
     currentLocationIdSpan.innerText = locationId;
-    detailsContent.innerHTML = '<p>กำลังโหลดข้อมูล...</p>'; // Show loading message
-    sidebar.classList.add('open'); // Open the sidebar immediately
+    detailsContent.innerHTML = '<p>กำลังโหลดข้อมูล...</p>';
+    actionMessage.innerText = ''; // Clear previous messages
+    document.getElementById('qrCodeInput').value = ''; // Clear QR input
+    sidebar.classList.add('open');
+    document.body.classList.add('sidebar-open'); // Add class to body for potential margin adjustment
 
     try {
         const response = await fetch(`${WEB_APP_URL}?locationId=${locationId}`);
-        const data = await response.json(); // Data will be an array of objects or an error
+        const data = await response.json(); // Data now contains {items: []}
 
         if (data.error) {
             detailsContent.innerHTML = `<p style="color: red;">ข้อผิดพลาด: ${data.error}</p>`;
             return;
         }
 
-        if (data.length > 0) {
-            let html = '<ul>';
-            // Group items by product name and count their quantity
-            const itemCounts = {};
-            data.forEach(item => {
-                if (itemCounts[item.productName]) {
-                    itemCounts[item.productName].count++;
-                    itemCounts[item.productName].qrcodes.push(item.qrCode);
-                } else {
-                    itemCounts[item.productName] = {
-                        count: 1,
-                        qrCode: item.qrCode, // Store one example QR code
-                        qrcodes: [item.qrCode] // Store all QR codes if needed for display
-                    };
-                }
-            });
+        const items = data.items; // These are already grouped by product name
 
-            for (const productName in itemCounts) {
-                const item = itemCounts[productName];
-                html += `<li>
-                            <strong>${productName}</strong><br>
-                            จำนวน: ${item.count} ชิ้น<br>
-                            QR Code (ตัวอย่าง): ${item.qrCode}
-                            </li>`;
-            }
+        if (items.length > 0) {
+            let html = '<ul>';
+            items.forEach(item => {
+                // Pass currentActiveLocationId to openProductQRCodesSidebar
+                html += `<li onclick="openProductQRCodesSidebar('${item.productName}', '${currentActiveLocationId}')">
+                            <div class="product-info">
+                                <strong>${item.productName}</strong><br>
+                                จำนวน: ${item.count} ชิ้น<br>
+                                QR Code (ตัวอย่าง): ${item.exampleQrCode}
+                            </div>
+                         </li>`;
+            });
             html += '</ul>';
             detailsContent.innerHTML = html;
+
         } else {
             detailsContent.innerHTML = '<p>ไม่มีสินค้าในตำแหน่งนี้</p>';
         }
 
     } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching data for main sidebar:', error);
         detailsContent.innerHTML = '<p style="color: red;">เกิดข้อผิดพลาดในการดึงข้อมูล. กรุณาลองใหม่อีกครั้ง.</p>';
     }
 }
@@ -98,11 +88,60 @@ async function openSidebar(locationId) {
 function closeSidebar() {
     const sidebar = document.getElementById('item-details-sidebar');
     sidebar.classList.remove('open');
+    document.body.classList.remove('sidebar-open');
+    closeProductQRCodesSidebar(); // Also close secondary sidebar if main is closed
 }
-// script.js (ต่อจากโค้ดเดิม)
 
-// ... (existing code for openSidebar, closeSidebar, etc.) ...
+// --- Functions for Secondary Sidebar (Product QRCodes) ---
+// Now accepts locationId to filter QRCodes
+async function openProductQRCodesSidebar(productName, locationId) {
+    const productQRCodesSidebar = document.getElementById('product-qrcodes-sidebar');
+    const currentProductNameSpan = document.getElementById('current-product-name');
+    const productQRCodesContent = document.getElementById('product-qrcodes-content');
 
+    currentProductNameSpan.innerText = productName;
+    productQRCodesContent.innerHTML = '<p>กำลังโหลด QR Codes...</p>'; // Loading message
+    productQRCodesSidebar.classList.add('open');
+    document.body.classList.add('secondary-sidebar-open'); // Adjust body margin for secondary sidebar
+
+    try {
+        // Fetch QR codes for this product name AND this specific location
+        const response = await fetch(`${WEB_APP_URL}?action=getQRCodesByProduct&productName=${encodeURIComponent(productName)}&locationIdFilter=${encodeURIComponent(locationId)}`);
+        const qrcodes = await response.json();
+
+        if (qrcodes.error) {
+            productQRCodesContent.innerHTML = `<p style="color: red;">ข้อผิดพลาด: ${qrcodes.error}</p>`;
+            return;
+        }
+
+        if (qrcodes.length > 0) {
+            let html = '<ul>';
+            qrcodes.forEach(item => {
+                // Each item in secondary sidebar has a checkbox and shows its specific QR code and location
+                html += `<li>
+                            <input type="checkbox" class="qrcode-checkbox" data-qr-code="${item.qrCode}">
+                            QR Code: ${item.qrCode}
+                         </li>`;
+            });
+            html += '</ul>';
+            productQRCodesContent.innerHTML = html;
+        } else {
+            productQRCodesContent.innerHTML = '<p>ไม่พบ QR Code สำหรับสินค้านี้ในตำแหน่งนี้</p>';
+        }
+
+    } catch (error) {
+        console.error('Error fetching product QR codes for secondary sidebar:', error);
+        productQRCodesContent.innerHTML = '<p style="color: red;">เกิดข้อผิดพลาดในการดึง QR Code. กรุณาลองใหม่อีกครั้ง.</p>';
+    }
+}
+
+function closeProductQRCodesSidebar() {
+    const productQRCodesSidebar = document.getElementById('product-qrcodes-sidebar');
+    productQRCodesSidebar.classList.remove('open');
+    document.body.classList.remove('secondary-sidebar-open'); // Remove body margin
+}
+
+// --- handleAddItem (no change) ---
 async function handleAddItem() {
     const locationId = document.getElementById('current-location-id').innerText;
     const qrCode = document.getElementById('qrCodeInput').value.trim();
@@ -119,7 +158,7 @@ async function handleAddItem() {
         const response = await fetch(WEB_APP_URL, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded', // Common for Apps Script doPost(e)
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: `action=add&locationId=${locationId}&qrCode=${qrCode}`
         });
@@ -128,9 +167,8 @@ async function handleAddItem() {
 
         if (result.success) {
             actionMessage.innerText = `เพิ่มสินค้า ${qrCode} สำเร็จ!`;
-            document.getElementById('qrCodeInput').value = ''; // Clear input
-            // Refresh details in sidebar after adding
-            await openSidebar(locationId); // Re-fetch and display updated list
+            document.getElementById('qrCodeInput').value = '';
+            await openSidebar(currentActiveLocationId); // Re-fetch and display updated list for current location
         } else {
             actionMessage.innerText = `ข้อผิดพลาดในการเพิ่ม: ${result.error || 'ไม่ทราบสาเหตุ'}`;
         }
@@ -139,17 +177,26 @@ async function handleAddItem() {
         actionMessage.innerText = 'เกิดข้อผิดพลาดในการเชื่อมต่อ (เพิ่มสินค้า)';
     }
 }
-async function handleRemoveItem() {
-    const locationId = document.getElementById('current-location-id').innerText;
-    const qrCode = document.getElementById('qrCodeInput').value.trim();
-    const actionMessage = document.getElementById('action-message');
 
-    if (!qrCode) {
-        actionMessage.innerText = 'กรุณากรอก QR Code ที่ต้องการลบ!';
+// --- handleRemoveSelectedItems (targets secondary sidebar checkboxes) ---
+async function handleRemoveSelectedItems() {
+    const locationId = currentActiveLocationId; // Use the globally tracked active location
+    const actionMessage = document.getElementById('action-message');
+    
+    // Select checkboxes ONLY from the secondary sidebar
+    const selectedCheckboxes = document.querySelectorAll('#product-qrcodes-sidebar .qrcode-checkbox:checked');
+
+    if (selectedCheckboxes.length === 0) {
+        actionMessage.innerText = 'กรุณาเลือก QR Code ที่ต้องการลบในหน้า QR Codes!';
         return;
     }
 
-    actionMessage.innerText = 'กำลังลบสินค้า...';
+    const qrcodesToRemove = [];
+    selectedCheckboxes.forEach(checkbox => {
+        qrcodesToRemove.push(checkbox.dataset.qrCode); // Get the actual QR code from data attribute
+    });
+    
+    actionMessage.innerText = 'กำลังลบสินค้าที่เลือก...';
 
     try {
         const response = await fetch(WEB_APP_URL, {
@@ -157,21 +204,22 @@ async function handleRemoveItem() {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: `action=remove&locationId=${locationId}&qrCode=${qrCode}`
+            body: `action=removeSelected&locationId=${locationId}&qrcodes=${JSON.stringify(qrcodesToRemove)}`
         });
 
         const result = await response.json();
 
         if (result.success) {
-            actionMessage.innerText = `ลบสินค้า ${qrCode} สำเร็จ!`;
-            document.getElementById('qrCodeInput').value = ''; // Clear input
-            // Refresh details in sidebar after removing
-            await openSidebar(locationId); // Re-fetch and display updated list
+            actionMessage.innerText = `ลบสินค้าที่เลือกสำเร็จ: ${result.message}`;
+            document.getElementById('qrCodeInput').value = ''; // Clear input field
+            // Re-fetch and display updated list for current location (main sidebar)
+            await openSidebar(currentActiveLocationId);
+            closeProductQRCodesSidebar(); // Close secondary sidebar after deletion
         } else {
             actionMessage.innerText = `ข้อผิดพลาดในการลบ: ${result.error || 'ไม่ทราบสาเหตุ'}`;
         }
     } catch (error) {
-        console.error('Error removing item:', error);
-        actionMessage.innerText = 'เกิดข้อผิดพลาดในการเชื่อมต่อ (ลบสินค้า)';
+        console.error('Error removing selected items:', error);
+        actionMessage.innerText = 'เกิดข้อผิดพลาดในการเชื่อมต่อ (ลบสินค้าที่เลือก)';
     }
 }
