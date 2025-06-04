@@ -27,8 +27,14 @@
         <div class="action-section">
             <input type="text" id="qrCodeInput" placeholder="สแกน/กรอก QR Code ที่นี่" autofocus>
             <button onclick="handleAddItem()">เพิ่มสินค้า</button>
-            <p id="action-message" style="color: red;"></p> </div>
-    </div>
+            <p id="action-message" style="color: red;"></p>
+        </div>
+
+        <hr>
+        <div class="action-section">
+            <button onclick="openRelocateModal()">ย้ายสินค้า</button>
+        </div>
+        </div>
 
     <div id="product-qrcodes-sidebar" class="sidebar secondary-sidebar">
         <button class="close-btn" onclick="closeProductQRCodesSidebar()">X</button>
@@ -39,9 +45,29 @@
         <hr>
         <div class="action-section">
             <button id="removeSelectedBtn" onclick="handleRemoveSelectedItems()">ลบสินค้าที่เลือก</button>
-            <p id="action-message-secondary" style="color: red;"></p> </div>
+            <p id="action-message-secondary" style="color: red;"></p>
+        </div>
     </div>
 
+    <div id="relocate-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeRelocateModal()">&times;</span>
+            <h2>ย้ายสินค้า</h2>
+            <div class="modal-body">
+                <label for="relocateQrCodeInput">QR Code:</label>
+                <input type="text" id="relocateQrCodeInput" placeholder="กรอก QR Code ที่ต้องการย้าย">
+                <button onclick="handleRelocateLookup()">ค้นหา</button>
+                <p id="relocate-message" style="color: red;"></p>
+
+                <div id="relocate-details" style="display: none;">
+                    <p>จาก Location: <span id="current-item-location"></span></p>
+                    <label for="newLocationInput">ไป Location ใหม่:</label>
+                    <input type="text" id="newLocationInput" placeholder="เช่น A-1, B-5">
+                    <button onclick="handleRelocateSubmit()">บันทึกการย้าย</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
