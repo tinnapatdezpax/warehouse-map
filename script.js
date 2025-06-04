@@ -28,6 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
             warehouseMap.appendChild(slot);
         });
     });
+     const qrCodeInput = document.getElementById('qrCodeInput');
+    if (qrCodeInput) {
+        qrCodeInput.addEventListener('keydown', (event) => {
+            // ตรวจสอบว่าปุ่มที่กดคือ Enter (keyCode 13 หรือ event.key === 'Enter')
+            if (event.key === 'Enter' || event.keyCode === 13) {
+                event.preventDefault(); // ป้องกันการเกิด default action เช่น การส่งฟอร์ม (ถ้ามี)
+                handleAddItem(); // เรียกฟังก์ชันเพิ่มสินค้า
+            }
+        });
+    }
 });
 
 async function openSidebar(locationId) {
