@@ -231,7 +231,7 @@ hr {
 }
 
 .modal.open {
-    display: flex; /* Use flexbox for centering when open */
+    display: flex; /* Use flexbox for centering */
 }
 
 .modal-content {
