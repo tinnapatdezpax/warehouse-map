@@ -55,7 +55,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // *** IMPORTANT FIX HERE: Call closeRelocateModal() to hide it on load ***
+    closeRelocateModal(); // นี่คือบรรทัดที่เพิ่มเข้ามา
 });
+
+// Add event listener for closing modal when clicking outside of content
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('relocate-modal');
+    if (event.target === modal) {
+        closeRelocateModal();
+    }
+});
+
 
 async function openSidebar(locationId) {
     const sidebar = document.getElementById('item-details-sidebar');
@@ -87,11 +99,9 @@ async function openSidebar(locationId) {
             items.forEach(item => {
                 // Pass currentActiveLocationId to openProductQRCodesSidebar
                 html += `<li onclick="openProductQRCodesSidebar('${item.productName}', '${currentActiveLocationId}')">
-                            <div class="product-info">
                                 <strong>${item.productName}</strong><br>
                                 จำนวน: ${item.count} ชิ้น
-                            </div>
-                         </li>`;
+                            </li>`;
             });
             html += '</ul>';
             detailsContent.innerHTML = html;
@@ -140,9 +150,9 @@ async function openProductQRCodesSidebar(productName, locationId) {
             qrcodes.forEach(item => {
                 // Each item in secondary sidebar has a checkbox and shows its specific QR code and location
                 html += `<li>
-                            <input type="checkbox" class="qrcode-checkbox" data-qr-code="${item.qrCode}">
-                            QR Code: ${item.qrCode}
-                         </li>`;
+                                <input type="checkbox" class="qrcode-checkbox" data-qr-code="${item.qrCode}">
+                                QR Code: ${item.qrCode}
+                            </li>`;
             });
             html += '</ul>';
             productQRCodesContent.innerHTML = html;
