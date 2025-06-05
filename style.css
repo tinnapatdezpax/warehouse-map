@@ -323,3 +323,139 @@ hr {
     font-weight: bold;
     color: #007bff; /* Highlight current location */
 }
+/* NEW: Main Relocate Button */
+.main-relocate-button {
+    background-color: #007bff; /* Blue */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-bottom: 20px; /* Space below the button */
+    display: block; /* Make it block to take full width or adjust as needed */
+    width: fit-content; /* Adjust width to content */
+    margin-left: 0; /* Align left */
+    transition: background-color 0.2s ease;
+}
+
+.main-relocate-button:hover {
+    background-color: #0056b3;
+}
+
+
+/* Adjust Modal Content for Relocate Multiple Items */
+#relocate-modal .modal-content {
+    max-width: 650px; /* Make modal wider to accommodate multiple inputs */
+    padding: 25px 30px;
+}
+
+#relocate-modal .modal-body {
+    text-align: left; /* Adjust text alignment within modal body */
+}
+
+/* Input section for adding QR Codes in modal */
+.relocate-input-section label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.relocate-input-section input[type="text"] {
+    width: calc(100% - 20px); /* Adjust width */
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.95em;
+    box-sizing: border-box;
+}
+
+.relocate-input-section .message {
+    font-size: 0.85em;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+/* Styles for dynamically added QR Code items */
+#relocate-items-list {
+    max-height: 300px; /* Limit height and make it scrollable */
+    overflow-y: auto;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #fcfcfc;
+    margin-bottom: 20px;
+}
+
+.relocate-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+    gap: 10px;
+    background-color: #e9f7fe; /* Light blue background for each item */
+    border: 1px solid #b3e0ed;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.relocate-item .qr-code-display {
+    font-weight: bold;
+    color: #0056b3;
+}
+
+.relocate-item .old-location-display {
+    color: #333;
+    white-space: nowrap; /* Prevent breaking "จาก Location: A-1" */
+}
+
+.relocate-item .new-location-input {
+    flex-grow: 1; /* Allow input to take available space */
+    min-width: 150px; /* Minimum width for input */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.relocate-item .remove-relocate-item-btn {
+    background-color: #dc3545; /* Red for remove button */
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+    transition: background-color 0.2s ease;
+}
+
+.relocate-item .remove-relocate-item-btn:hover {
+    background-color: #c82333;
+}
+
+#saveRelocateBtn {
+    background-color: #28a745; /* Green for Save */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-top: 15px;
+    width: auto; /* Allow button to size to content */
+    display: block; /* Make it block level */
+    margin-left: auto; /* Center or align right */
+    margin-right: auto; /* Center or align right */
+    transition: background-color 0.2s ease;
+}
+
+#saveRelocateBtn:hover {
+    background-color: #218838;
+}
+
+/* Remove old relocate-details styles if they conflict */
+#relocate-details {
+    display: none !important; /* Ensure the old section is hidden */
+}

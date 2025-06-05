@@ -5,6 +5,9 @@ const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyGz5ruLtT5CJehNCEb
 // Global variable to store currently active location ID
 let currentActiveLocationId = '';
 
+// Array to store QR codes and their new locations for the relocate modal
+let relocateItems = []; // NEW: Array to hold {qrCode: '', oldLocation: '', newLocation: ''} objects
+
 document.addEventListener('DOMContentLoaded', () => {
     const warehouseMap = document.getElementById('warehouse-map');
     const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
@@ -23,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Add Enter key functionality to QR code input
+    // Add Enter key functionality to QR code input in main sidebar
     const qrCodeInput = document.getElementById('qrCodeInput');
     if (qrCodeInput) {
         qrCodeInput.addEventListener('keydown', (event) => {
@@ -34,36 +37,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Add Enter key functionality to relocate QR code input (in modal)
+    // NEW: Add Enter key functionality to QR code input in relocate modal
     const relocateQrCodeInput = document.getElementById('relocateQrCodeInput');
     if (relocateQrCodeInput) {
         relocateQrCodeInput.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' || event.keyCode === 13) {
                 event.preventDefault();
-                handleRelocateLookup();
-            }
-        });
-    }
-
-    // Add Enter key functionality to new location input (in modal)
-    const newLocationInput = document.getElementById('newLocationInput');
-    if (newLocationInput) {
-        newLocationInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.keyCode === 13) {
-                event.preventDefault();
-                handleRelocateSubmit();
+                addRelocateItemToList(); // Call new function to add to list
             }
         });
     }
 
     // *** IMPORTANT FIX HERE: Call closeRelocateModal() to hide it on load ***
-    closeRelocateModal(); // นี่คือบรรทัดที่เพิ่มเข้ามา
+    // This is confirmed working.
+    closeRelocateModal();
 });
 
 // Add event listener for closing modal when clicking outside of content
 window.addEventListener('click', function(event) {
     const modal = document.getElementById('relocate-modal');
-    if (event.target === modal) {
+    // Ensure modal is open and the click is outside modal-content
+    if (event.target === modal && modal.classList.contains('open')) {
         closeRelocateModal();
     }
 });
@@ -256,38 +250,50 @@ async function handleRemoveSelectedItems() {
 }
 
 
-// --- New Functions for Relocate Modal ---
-function openRelocateModal() {
+// --- NEW Functions for Relocate Modal (Multiple Items) ---
+async function openRelocateModal() {
     const relocateModal = document.getElementById('relocate-modal');
     relocateModal.classList.add('open');
+    
     document.getElementById('relocateQrCodeInput').value = ''; // Clear input
     document.getElementById('relocate-message').innerText = ''; // Clear message
-    document.getElementById('relocate-details').style.display = 'none'; // Hide details section
-    document.getElementById('current-item-location').innerText = ''; // Clear current location
-    document.getElementById('newLocationInput').value = ''; // Clear new location
+    document.getElementById('relocate-items-list').innerHTML = ''; // Clear previous items in the list
+    relocateItems = []; // Reset the array
+    
+    // Auto-focus on the input when modal opens
+    setTimeout(() => {
+        document.getElementById('relocateQrCodeInput').focus();
+    }, 100);
 }
 
 function closeRelocateModal() {
     const relocateModal = document.getElementById('relocate-modal');
     relocateModal.classList.remove('open');
+    // Clear list and reset array when closing
+    document.getElementById('relocate-items-list').innerHTML = '';
+    relocateItems = [];
 }
 
-async function handleRelocateLookup() {
+async function addRelocateItemToList() {
     const qrCode = document.getElementById('relocateQrCodeInput').value.trim();
     const relocateMessage = document.getElementById('relocate-message');
-    const relocateDetails = document.getElementById('relocate-details');
-    const currentItemLocationSpan = document.getElementById('current-item-location');
+    const relocateItemsList = document.getElementById('relocate-items-list');
 
     relocateMessage.innerText = '';
-    relocateDetails.style.display = 'none'; // Hide details until found
-    currentItemLocationSpan.innerText = ''; // Clear previous data
 
     if (!qrCode) {
         relocateMessage.innerText = 'กรุณากรอก QR Code ที่ต้องการย้าย';
         return;
     }
 
-    relocateMessage.innerText = 'กำลังค้นหา Location ของ QR Code...';
+    // Check if QR code is already in the list
+    if (relocateItems.some(item => item.qrCode === qrCode)) {
+        relocateMessage.innerText = `QR Code '${qrCode}' ถูกเพิ่มไปแล้วในรายการ`;
+        document.getElementById('relocateQrCodeInput').value = ''; // Clear input
+        return;
+    }
+
+    relocateMessage.innerText = `กำลังค้นหา Location ของ QR Code '${qrCode}'...`;
 
     try {
         const response = await fetch(`${WEB_APP_URL}?action=getQRCodeLocation&qrCode=${encodeURIComponent(qrCode)}`);
@@ -299,11 +305,41 @@ async function handleRelocateLookup() {
         }
 
         if (data.location) {
-            currentItemLocationSpan.innerText = data.location;
-            relocateDetails.style.display = 'block'; // Show the next section
-            relocateMessage.innerText = `QR Code '${qrCode}' พบใน Location: ${data.location}`;
-            // Store original location for submission, maybe in a data attribute or global var
-            relocateDetails.dataset.originalLocation = data.location; // Store for submission
+            const oldLocation = data.location;
+            
+            // Add to internal array
+            relocateItems.push({
+                qrCode: qrCode,
+                oldLocation: oldLocation,
+                newLocation: '' // Initialize newLocation as empty
+            });
+
+            // Add to UI
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('relocate-item');
+            itemDiv.dataset.qrCode = qrCode; // Store QR code on the element
+            itemDiv.dataset.oldLocation = oldLocation; // Store old location on the element
+
+            itemDiv.innerHTML = `
+                <span class="qr-code-display">QR Code: ${qrCode}</span>
+                <span class="old-location-display">จาก Location: ${oldLocation}</span>
+                <input type="text" class="new-location-input" placeholder="ไป Location ใหม่: เช่น A-1, B-5">
+                <button class="remove-relocate-item-btn" onclick="removeRelocateItem('${qrCode}')">ลบ</button>
+            `;
+            relocateItemsList.appendChild(itemDiv);
+
+            // Add event listener for Enter key on the new location input
+            const newLocationInput = itemDiv.querySelector('.new-location-input');
+            newLocationInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.keyCode === 13) {
+                    event.preventDefault();
+                    document.getElementById('saveRelocateBtn').click(); // Trigger save
+                }
+            });
+
+            relocateMessage.innerText = `QR Code '${qrCode}' พบใน Location: ${oldLocation} และเพิ่มในรายการแล้ว`;
+            document.getElementById('relocateQrCodeInput').value = ''; // Clear input for next QR
+            document.getElementById('relocateQrCodeInput').focus(); // Keep focus on input
         } else {
             relocateMessage.innerText = `ไม่พบ QR Code '${qrCode}' ในคลังสินค้า`;
         }
@@ -314,32 +350,55 @@ async function handleRelocateLookup() {
     }
 }
 
+function removeRelocateItem(qrCodeToRemove) {
+    // Remove from internal array
+    relocateItems = relocateItems.filter(item => item.qrCode !== qrCodeToRemove);
+
+    // Remove from UI
+    const relocateItemsList = document.getElementById('relocate-items-list');
+    const itemToRemove = relocateItemsList.querySelector(`.relocate-item[data-qr-code="${qrCodeToRemove}"]`);
+    if (itemToRemove) {
+        relocateItemsList.removeChild(itemToRemove);
+    }
+    document.getElementById('relocate-message').innerText = `ลบ QR Code '${qrCodeToRemove}' ออกจากรายการแล้ว`;
+}
+
+
 async function handleRelocateSubmit() {
-    const qrCode = document.getElementById('relocateQrCodeInput').value.trim();
-    const oldLocation = document.getElementById('relocate-details').dataset.originalLocation;
-    const newLocation = document.getElementById('newLocationInput').value.trim();
     const relocateMessage = document.getElementById('relocate-message');
-
-    relocateMessage.innerText = '';
-
-    if (!qrCode || !oldLocation || !newLocation) {
-        relocateMessage.innerText = 'กรุณากรอกข้อมูลให้ครบถ้วน (QR Code, Location เดิม, Location ใหม่)';
-        return;
-    }
-
-    // Basic validation for new location format (optional, but good practice)
-    // You might want to add more robust validation based on your A-1, B-2 format
-    if (!/^[A-H]-\d{1,2}$/.test(newLocation)) {
-        relocateMessage.innerText = 'รูปแบบ Location ใหม่ไม่ถูกต้อง (เช่น A-1, B-5)';
-        return;
-    }
-
-    if (newLocation === oldLocation) {
-        relocateMessage.innerText = 'Location ใหม่ซ้ำกับ Location เดิม';
-        return;
-    }
-
     relocateMessage.innerText = 'กำลังบันทึกการย้ายสินค้า...';
+
+    // Update newLocation in relocateItems array from UI inputs
+    const itemElements = document.querySelectorAll('#relocate-items-list .relocate-item');
+    let allValid = true;
+
+    if (itemElements.length === 0) {
+        relocateMessage.innerText = 'กรุณาเพิ่ม QR Code ที่ต้องการย้ายก่อน!';
+        return;
+    }
+
+    relocateItems.forEach(item => {
+        const correspondingElement = document.querySelector(`.relocate-item[data-qr-code="${item.qrCode}"]`);
+        const newLocationInput = correspondingElement ? correspondingElement.querySelector('.new-location-input') : null;
+        if (newLocationInput) {
+            item.newLocation = newLocationInput.value.trim();
+
+            // Validate new location format (e.g., A-1, B-5)
+            if (!/^[A-H]-\d{1,2}$/.test(item.newLocation)) {
+                relocateMessage.innerText = `รูปแบบ Location ใหม่ไม่ถูกต้องสำหรับ ${item.qrCode} (เช่น A-1, B-5)`;
+                allValid = false;
+            } else if (item.newLocation === item.oldLocation) {
+                relocateMessage.innerText = `Location ใหม่ของ ${item.qrCode} ซ้ำกับ Location เดิม`;
+                allValid = false;
+            }
+        } else {
+            allValid = false; // Should not happen if itemElements correctly represents relocateItems
+        }
+    });
+
+    if (!allValid) {
+        return; // Stop if any validation fails
+    }
 
     try {
         const response = await fetch(WEB_APP_URL, {
@@ -347,31 +406,33 @@ async function handleRelocateSubmit() {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: `action=relocate&qrCode=${encodeURIComponent(qrCode)}&oldLocation=${encodeURIComponent(oldLocation)}&newLocation=${encodeURIComponent(newLocation)}`
+            body: `action=relocateMultiple&items=${encodeURIComponent(JSON.stringify(relocateItems))}`
         });
 
         const result = await response.json();
 
         if (result.success) {
-            relocateMessage.innerText = `ย้ายสินค้า ${qrCode} สำเร็จ: ${result.message}`;
+            relocateMessage.innerText = `ย้ายสินค้าสำเร็จ: ${result.message}`;
+            // Clear inputs and list after successful submission
             document.getElementById('relocateQrCodeInput').value = '';
-            document.getElementById('newLocationInput').value = '';
-            document.getElementById('relocate-details').style.display = 'none'; // Hide details after success
-            document.getElementById('current-item-location').innerText = ''; // Clear old location text
+            document.getElementById('relocate-items-list').innerHTML = '';
+            relocateItems = []; // Reset the array
+            
+            // Optionally close the modal after a short delay
+            setTimeout(() => {
+                closeRelocateModal();
+            }, 1500);
 
-            // After successful relocation, refresh the current sidebar if it's open
-            // This is crucial to reflect the change in the UI
+            // Re-fetch and display updated list for current location if main sidebar is open
             if (currentActiveLocationId) {
                 await openSidebar(currentActiveLocationId);
             }
-            // If the item was moved out of currentActiveLocationId, that location will now reflect the change.
-            // If it was moved into currentActiveLocationId, that location will also reflect the change.
 
         } else {
             relocateMessage.innerText = `ข้อผิดพลาดในการย้าย: ${result.error || 'ไม่ทราบสาเหตุ'}`;
         }
     } catch (error) {
-        console.error('Error relocating item:', error);
-        relocateMessage.innerText = 'เกิดข้อผิดพลาดในการเชื่อมต่อ (ย้ายสินค้า)';
+        console.error('Error relocating items:', error);
+        relocateMessage.innerText = 'เกิดข้อผิดพลาดในการเชื่อมต่อ (ย้ายสินค้าหลายรายการ)';
     }
 }

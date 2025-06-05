@@ -9,7 +9,15 @@
 <body>
     <div class="container">
         <h1>Visual Warehouse Stock Map</h1>
+<div class="container">
+    <h1>Visual Warehouse Stock Map</h1>
 
+    <button id="openRelocateModalBtn" onclick="openRelocateModal()" class="main-relocate-button">ย้ายสินค้าหลายรายการ</button>
+
+    <div id="warehouse-map">
+        </div>
+
+    </div>
         <div id="warehouse-map">
             </div>
     </div>
@@ -49,24 +57,26 @@
         </div>
     </div>
 
-    <div id="relocate-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeRelocateModal()">&times;</span>
-            <h2>ย้ายสินค้า</h2>
-            <div class="modal-body">
-                <label for="relocateQrCodeInput">QR Code:</label>
-                <input type="text" id="relocateQrCodeInput" placeholder="กรอก QR Code ที่ต้องการย้าย">
-                <button onclick="handleRelocateLookup()">ค้นหา</button>
-                <p id="relocate-message" style="color: red;"></p>
-
-                <div id="relocate-details" style="display: none;">
-                    <p>จาก Location: <span id="current-item-location"></span></p>
-                    <label for="newLocationInput">ไป Location ใหม่:</label>
-                    <input type="text" id="newLocationInput" placeholder="เช่น A-1, B-5">
-                    <button onclick="handleRelocateSubmit()">บันทึกการย้าย</button>
-                </div>
+<div id="relocate-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeRelocateModal()">&times;</span>
+        <h2>ย้ายสินค้า</h2>
+        <div class="modal-body">
+            <div class="relocate-input-section">
+                <label for="relocateQrCodeInput">กรอก QR Code:</label>
+                <input type="text" id="relocateQrCodeInput" placeholder="สแกนหรือกรอก QR Code ที่ต้องการย้าย" autofocus>
+                <p id="relocate-message" class="message"></p>
             </div>
+
+            <hr>
+
+            <div id="relocate-items-list">
+                </div>
+
+            <button id="saveRelocateBtn" onclick="handleRelocateSubmit()">บันทึกการย้าย</button>
         </div>
+    </div>
+</div>
     </div>
     <script src="script.js"></script>
 </body>
