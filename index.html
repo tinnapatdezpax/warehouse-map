@@ -9,75 +9,97 @@
 <body>
     <div class="container">
         <h1>Visual Warehouse Stock Map</h1>
-<div class="container">
-    <h1>Visual Warehouse Stock Map</h1>
 
-    <button id="openRelocateModalBtn" onclick="openRelocateModal()" class="main-relocate-button">ย้ายสินค้าหลายรายการ</button>
-
-    <div id="warehouse-map">
+        <div class="main-action-buttons">
+            <button class="main-relocate-button" onclick="openRelocateModal()">ย้ายสินค้าหลายรายการ</button>
+            <button class="main-search-button" onclick="openSearchModal()">ค้นหาตำแหน่งสินค้า (QR)</button>
+            <button class="main-product-search-button" onclick="openProductSearchModal()">ค้นหาสินค้าตามชื่อ</button>
         </div>
+        
 
-    </div>
         <div id="warehouse-map">
             </div>
     </div>
 
     <div id="item-details-sidebar" class="sidebar">
-        <button class="close-btn" onclick="closeSidebar()">X</button>
-        <h2>สินค้าในตำแหน่ง: <span id="current-location-id"></span></h2>
+        <button class="close-btn" onclick="closeSidebar()">&times;</button>
+        <h2>รายละเอียดสินค้าใน Location: <span id="current-location-id"></span></h2>
         <div id="details-content">
-            <p>คลิกที่ช่องเก็บสินค้าบนแผนผังเพื่อดูรายละเอียด</p>
-        </div>
-
+            </div>
         <hr>
-
-        <h3>เพิ่มสินค้า</h3> 
         <div class="action-section">
-            <input type="text" id="qrCodeInput" placeholder="สแกน/กรอก QR Code ที่นี่" autofocus>
+            <h3>เพิ่มสินค้าเข้า Location นี้</h3>
+            <input type="text" id="qrCodeInput" placeholder="สแกนหรือกรอก QR Code">
             <button onclick="handleAddItem()">เพิ่มสินค้า</button>
-            <p id="action-message" style="color: red;"></p>
+            <p id="action-message"></p>
         </div>
-
-        <hr>
-        <div class="action-section">
-            <button onclick="openRelocateModal()">ย้ายสินค้า</button>
-        </div>
-        </div>
+    </div>
 
     <div id="product-qrcodes-sidebar" class="sidebar secondary-sidebar">
-        <button class="close-btn" onclick="closeProductQRCodesSidebar()">X</button>
-        <h2>QR Codes ของ: <span id="current-product-name"></span></h2>
+        <button class="close-btn" onclick="closeProductQRCodesSidebar()">&times;</button>
+        <h2>QR Codes ของสินค้า: <span id="current-product-name"></span></h2>
         <div id="product-qrcodes-content">
-            <p>กำลังโหลด...</p>
-        </div>
+            </div>
         <hr>
         <div class="action-section">
-            <button id="removeSelectedBtn" onclick="handleRemoveSelectedItems()">ลบสินค้าที่เลือก</button>
-            <p id="action-message-secondary" style="color: red;"></p>
+            <h3>ลบสินค้าที่เลือก</h3>
+            <button onclick="handleRemoveSelectedItems()">ลบสินค้าที่เลือก</button>
+            <p id="action-message-secondary"></p>
         </div>
     </div>
 
-<div id="relocate-modal" class="modal">
-    <div class="modal-content">
-        <span class="close-button" onclick="closeRelocateModal()">&times;</span>
-        <h2>ย้ายสินค้า</h2>
-        <div class="modal-body">
-            <div class="relocate-input-section">
-                <label for="relocateQrCodeInput">กรอก QR Code:</label>
-                <input type="text" id="relocateQrCodeInput" placeholder="สแกนหรือกรอก QR Code ที่ต้องการย้าย" autofocus>
-                <p id="relocate-message" class="message"></p>
-            </div>
-
-            <hr>
-
-            <div id="relocate-items-list">
+    <div id="relocate-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeRelocateModal()">&times;</span>
+            <h2>ย้ายสินค้า</h2>
+            <div class="modal-body">
+                <div class="relocate-input-section">
+                    <label for="relocateQrCodeInput">กรอก QR Code:</label>
+                    <input type="text" id="relocateQrCodeInput" placeholder="สแกนหรือกรอก QR Code ที่ต้องการย้าย">
+                    <button id="addRelocateItemBtn" type="button">เพิ่มรายการ</button>
+                    <p class="message" id="relocate-message"></p>
                 </div>
-
-            <button id="saveRelocateBtn" onclick="handleRelocateSubmit()">บันทึกการย้าย</button>
+                <div id="relocate-items-list">
+                    </div>
+                <button id="saveRelocateBtn" onclick="handleRelocateSubmit()">บันทึกการย้าย</button>
+            </div>
         </div>
     </div>
-</div>
+
+    <div id="search-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeSearchModal()">&times;</span>
+            <h2>ค้นหาตำแหน่งสินค้า (QR Code)</h2>
+            <div class="modal-body">
+                <div class="relocate-input-section"> <label for="searchQrCodeInput">กรอก QR Code:</label>
+                    <input type="text" id="searchQrCodeInput" placeholder="สแกนหรือกรอก QR Code ที่ต้องการค้นหา">
+                    <button id="addSearchItemBtn" type="button">เพิ่มรายการ</button>
+                    <p class="message" id="search-message"></p>
+                </div>
+                <div id="search-items-list">
+                    </div>
+                </div>
+        </div>
     </div>
+
+    <div id="product-search-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeProductSearchModal()">&times;</span>
+            <h2>ค้นหาสินค้าตามชื่อ</h2>
+            <div class="modal-body">
+                <div class="product-search-input-section">
+                    <label for="productNameInput">กรอกชื่อสินค้า:</label>
+                    <input type="text" id="productNameInput" placeholder="กรอกชื่อสินค้าที่ต้องการค้นหา">
+                    <button id="searchByProductNameBtn" type="button">ค้นหา</button>
+                    <p class="message" id="product-search-message"></p>
+                </div>
+                <div id="product-search-results-list">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+
     <script src="script.js"></script>
 </body>
 </html>

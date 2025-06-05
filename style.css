@@ -40,6 +40,15 @@ h1 {
     font-size: 2em;
 }
 
+/* NEW: Container for main action buttons */
+.main-action-buttons {
+    display: flex;
+    gap: 15px; /* Space between buttons */
+    margin-bottom: 20px; /* Space below the buttons */
+    justify-content: center; /* Center the buttons */
+    flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
 /* Warehouse Map Styles */
 #warehouse-map {
     display: grid;
@@ -55,14 +64,14 @@ h1 {
 }
 
 .location-slot {
-    background-color: #e0f2f7; /* Light blue */
+    background-color: #e0f2f7; /* Default light blue */
     border: 1px solid #b3e0ed;
     border-radius: 6px;
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: bold;
-    color: #007bff; /* Blue text */
+    color: #007bff; /* Default blue text */
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.2s ease;
     font-size: 1.1em;
@@ -73,6 +82,26 @@ h1 {
     transform: translateY(-2px);
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
+
+/* NEW: Location Slot Color States */
+.location-slot.empty {
+    background-color: #42bd41; /* Green for empty */
+    border-color: #38a536;
+    color: white;
+}
+
+.location-slot.low-stock {
+    background-color: #ffeb3b; /* Yellow for low stock (1-5 items) */
+    border-color: #e6c800;
+    color: #333;
+}
+
+.location-slot.high-stock {
+    background-color: #ff5722; /* Red for high stock (6+ items) */
+    border-color: #e04e1e;
+    color: white;
+}
+
 
 /* Sidebar Styles (Main and Secondary) */
 .sidebar {
@@ -207,7 +236,7 @@ hr {
     background-color: #218838;
 }
 
-#action-message, #action-message-secondary, #relocate-message {
+#action-message, #action-message-secondary, #relocate-message, #search-message, #product-search-message {
     margin-top: 10px;
     font-size: 0.9em;
     font-weight: bold;
@@ -225,7 +254,6 @@ hr {
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0,0,0,0.6); /* Darker overlay */
-    /* *** ลบ display: flex; ตรงนี้ออกไป *** */
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
 }
@@ -306,23 +334,6 @@ hr {
     background-color: #0056b3;
 }
 
-#relocate-details {
-    margin-top: 25px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-    text-align: left; /* Align text within details section */
-}
-
-#relocate-details p {
-    margin-bottom: 10px;
-    font-size: 1.1em;
-    color: #333;
-}
-
-#relocate-details span {
-    font-weight: bold;
-    color: #007bff; /* Highlight current location */
-}
 /* NEW: Main Relocate Button */
 .main-relocate-button {
     background-color: #007bff; /* Blue */
@@ -332,10 +343,6 @@ hr {
     border-radius: 5px;
     cursor: pointer;
     font-size: 1em;
-    margin-bottom: 20px; /* Space below the button */
-    display: block; /* Make it block to take full width or adjust as needed */
-    width: fit-content; /* Adjust width to content */
-    margin-left: 0; /* Align left */
     transition: background-color 0.2s ease;
 }
 
@@ -343,41 +350,129 @@ hr {
     background-color: #0056b3;
 }
 
+/* NEW: Main QR Search Button - similar to relocate but distinct color */
+.main-search-button {
+    background-color: #6c757d; /* Grey */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
 
-/* Adjust Modal Content for Relocate Multiple Items */
-#relocate-modal .modal-content {
+.main-search-button:hover {
+    background-color: #5a6268;
+}
+
+/* NEW: Main Product Name Search Button */
+.main-product-search-button {
+    background-color: #28a745; /* Green */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
+
+.main-product-search-button:hover {
+    background-color: #218838;
+}
+
+
+/* Adjust Modal Content for Relocate Multiple Items & Search Modals */
+#relocate-modal .modal-content, 
+#search-modal .modal-content,
+#product-search-modal .modal-content { /* Apply to all three modals */
     max-width: 650px; /* Make modal wider to accommodate multiple inputs */
     padding: 25px 30px;
 }
 
-#relocate-modal .modal-body {
+#relocate-modal .modal-body, 
+#search-modal .modal-body,
+#product-search-modal .modal-body { /* Apply to all three modals */
     text-align: left; /* Adjust text alignment within modal body */
 }
 
-/* Input section for adding QR Codes in modal */
+/* Input section for adding QR Codes in modal (reused for QR search) */
+.relocate-input-section {
+    display: flex; /* Use flexbox for input and button alignment */
+    align-items: center; /* Vertically align items */
+    gap: 10px; /* Space between input and button */
+    margin-bottom: 15px; /* Space below this section */
+}
+
 .relocate-input-section label {
-    font-weight: bold;
-    margin-bottom: 5px;
-    display: block;
+    display: none; /* Hide label as placeholder is used */
 }
 
 .relocate-input-section input[type="text"] {
-    width: calc(100% - 20px); /* Adjust width */
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 0.95em;
-    box-sizing: border-box;
+    flex-grow: 1; /* Allow input to take available space */
+    width: auto; /* Override default width */
+    margin-bottom: 0; /* Remove bottom margin */
+}
+
+.relocate-input-section button {
+    margin-top: 0; /* Remove top margin from button */
+    padding: 10px 15px; /* Adjust button padding */
+    font-size: 1em; /* Adjust button font size */
+    background-color: #6c757d; /* Gray color for add button */
+}
+
+.relocate-input-section button:hover {
+    background-color: #5a6268;
 }
 
 .relocate-input-section .message {
     font-size: 0.85em;
     color: #555;
     margin-bottom: 15px;
+    text-align: center; /* Center the message */
+    width: 100%; /* Make message span full width */
 }
 
-/* Styles for dynamically added QR Code items */
+/* NEW: Input section for Product Name Search Modal */
+.product-search-input-section {
+    display: flex; /* Use flexbox for input and button alignment */
+    align-items: center; /* Vertically align items */
+    gap: 10px; /* Space between input and button */
+    margin-bottom: 15px; /* Space below this section */
+}
+
+.product-search-input-section label {
+    display: none; /* Hide label as placeholder is used */
+}
+
+.product-search-input-section input[type="text"] {
+    flex-grow: 1; /* Allow input to take available space */
+    width: auto; /* Override default width */
+    margin-bottom: 0; /* Remove bottom margin */
+}
+
+.product-search-input-section button {
+    margin-top: 0; /* Remove top margin from button */
+    padding: 10px 15px; /* Adjust button padding */
+    font-size: 1em; /* Adjust button font size */
+    background-color: #28a745; /* Green for product search button */
+}
+
+.product-search-input-section button:hover {
+    background-color: #218838;
+}
+
+.product-search-input-section .message {
+    font-size: 0.85em;
+    color: #555;
+    margin-bottom: 15px;
+    text-align: center; /* Center the message */
+    width: 100%; /* Make message span full width */
+}
+
+
+/* Styles for dynamically added QR Code items (Relocate) */
 #relocate-items-list {
     max-height: 300px; /* Limit height and make it scrollable */
     overflow-y: auto;
@@ -404,11 +499,13 @@ hr {
 .relocate-item .qr-code-display {
     font-weight: bold;
     color: #0056b3;
+    flex-shrink: 0; /* Prevent QR code text from shrinking */
 }
 
 .relocate-item .old-location-display {
     color: #333;
     white-space: nowrap; /* Prevent breaking "จาก Location: A-1" */
+    flex-shrink: 0; /* Prevent old location text from shrinking */
 }
 
 .relocate-item .new-location-input {
@@ -429,11 +526,108 @@ hr {
     cursor: pointer;
     font-size: 0.8em;
     transition: background-color 0.2s ease;
+    flex-shrink: 0; /* Prevent button from shrinking */
 }
 
 .relocate-item .remove-relocate-item-btn:hover {
     background-color: #c82333;
 }
+
+/* Styles for dynamically added QR Code items (QR Search) */
+#search-items-list {
+    max-height: 300px; /* Limit height and make it scrollable */
+    overflow-y: auto;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #fcfcfc;
+    margin-bottom: 20px;
+}
+
+.search-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    background-color: #e6ffe6; /* Lighter green background for search item */
+    border: 1px solid #a6e6a6;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.search-item .qr-code-display {
+    font-weight: bold;
+    color: #007f00; /* Darker green */
+    flex-shrink: 0;
+}
+
+.search-item .found-location-display {
+    color: #333;
+    white-space: nowrap;
+    flex-grow: 1; /* Allow location to take more space */
+}
+
+.search-item .remove-search-item-btn {
+    background-color: #dc3545; /* Red for remove button */
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.search-item .remove-search-item-btn:hover {
+    background-color: #c82333;
+}
+
+/* NEW: Styles for dynamically added Product Search results */
+#product-search-results-list {
+    max-height: 300px; /* Limit height and make it scrollable */
+    overflow-y: auto;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #fcfcfc;
+    margin-bottom: 20px;
+}
+
+.product-search-result-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    background-color: #fff3e0; /* Light orange background */
+    border: 1px solid #ffd790;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.product-search-result-item .product-name-display {
+    font-weight: bold;
+    color: #e65100; /* Darker orange */
+    flex-shrink: 0;
+    width: 100%; /* Make product name span full width */
+}
+
+.product-search-result-item .qr-code-display {
+    color: #333;
+    white-space: nowrap;
+}
+
+.product-search-result-item .location-display {
+    color: #333;
+    white-space: nowrap;
+    flex-grow: 1; /* Allow location to take more space */
+}
+
+/* No remove button needed for product search results as they are just informational */
 
 #saveRelocateBtn {
     background-color: #28a745; /* Green for Save */
