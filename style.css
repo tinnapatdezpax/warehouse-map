@@ -225,13 +225,13 @@ hr {
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgba(0,0,0,0.6); /* Darker overlay */
-    display: flex; /* Use flexbox for centering */
+    /* *** ลบ display: flex; ตรงนี้ออกไป *** */
     justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
 }
 
 .modal.open {
-    display: flex; /* Use flexbox for centering */
+    display: flex; /* Only display flex when the 'open' class is present */
 }
 
 .modal-content {
